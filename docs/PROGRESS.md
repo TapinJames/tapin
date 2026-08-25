@@ -5,19 +5,19 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 ## Where we are
 
 - **Phase:** Week 0 — repo initialized, no product code yet.
-- **Current task:** T-001 (initialize the repo). Next: T-002 (iOS Screen Time core loop).
-- **Last session:** — (none yet)
+- **Current task:** T-001 complete. Next: T-002 (iOS Screen Time core loop).
+- **Last session:** Aug 25, 2026 — T-001 completed.
 
 ## Done
 
 - Repo skeleton, standing orders, docs package, task briefs T-001 – T-004 (written by the tech-lead chat, Aug 25, 2026).
+- **T-001:** Repo initialized on GitHub (TapinJames/tapin), tools installed (xcodegen 2.46.0, gitleaks 8.30.1, supabase 2.72.7), CI green.
 
 ## Next
 
-1. T-001 — initialize the repo on James's Mac, install tools, first push to `main`.
-2. T-002 — iOS: Screen Time authorization → hide apps by bundle identifier → scheduled unlock, on James's iPhone.
-3. T-003 — iOS: VPN layer (DNS-filtering packet tunnel) with the "switched off" signal.
-4. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
+1. T-002 — iOS: Screen Time authorization → hide apps by bundle identifier → scheduled unlock, on James's iPhone.
+2. T-003 — iOS: VPN layer (DNS-filtering packet tunnel) with the "switched off" signal.
+3. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
 
 ## Blockers / decisions needed
 

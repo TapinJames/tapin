@@ -29,4 +29,47 @@ James has already: created the GitHub organization and an empty private reposito
 None. James does: click through `gh auth login`, the Xcode tools dialog if it appears, and tell Claude Code which email to use for git.
 
 ## Report
-Append under `## Report`: tool versions, the repo URL, the CI run URL, anything that didn't install cleanly, and any question for the tech lead.
+
+**Date:** Aug 25, 2026
+
+### Tool versions installed
+| Tool | Version |
+|------|---------|
+| macOS | 26.1 (Tahoe) |
+| Xcode | 26.1.1 |
+| Homebrew | 5.0.13 |
+| git | 2.50.1 |
+| gh (GitHub CLI) | 2.86.0 |
+| supabase | 2.72.7 |
+| xcodegen | 2.46.0 |
+| node | 25.2.1 |
+| gitleaks | 8.30.1 |
+
+### Repo URL
+https://github.com/TapinJames/tapin
+
+### CI run (green)
+https://github.com/TapinJames/tapin/actions/runs/32905182165
+
+### What changed
+- `.github/workflows/ci.yml`: Fixed YAML syntax (expanded inline flow style), disabled web/supabase jobs until those codebases exist (hashFiles() fails at job-level before checkout), excluded `.env.example` from forbidden file check.
+- `docs/local-development.md`: Added tool versions table.
+- `docs/PROGRESS.md`: Updated to mark T-001 done.
+
+### Installation notes
+- `xcodegen` and `gitleaks` were installed fresh via Homebrew.
+- `gh auth` required switching from the JamesK32 account to TapinJames account and adding the `workflow` scope to push CI files.
+- git user configured: James Koonce <james@tapinschools.com>
+
+### Questions for tech lead
+1. **CI web/supabase jobs:** I commented them out because `hashFiles()` at job-level `if:` fails before checkout runs (no workspace yet). Should I rewrite them using path filters on the workflow trigger instead, or just re-enable them when the code lands?
+
+### Finish line verification
+```
+✓ gh repo view → TapinJames/tapin exists
+✓ git log → 4 commits on main
+✓ CI → green (run 32905182165)
+✓ xcodegen --version → 2.46.0
+✓ supabase --version → 2.72.7
+✓ gh auth status → TapinJames (active)
+```
