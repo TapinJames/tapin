@@ -1,0 +1,10 @@
+# gitleaks config — the demo mockups embed the logo as base64 data URLs (fictional data, no secrets).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Design mockups with embedded images; fictional demo data"
+paths = [
+  '''docs/design/.*\.html$''',
+  '''docs/design/tapin-data_v05\.(js|json)$''',
+]

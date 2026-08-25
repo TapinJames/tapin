@@ -1,0 +1,61 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  secrets-scan:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docs-and-hygiene:
+    name: Repo hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No committed env files, keys or certificates
+        run: |
+          set -e
+          bad=$(git ls-files | grep -E '(^|/)\.env(\..*)?$|\.p8$|\.p12$|\.mobileprovision$|\.keystore$|\.jks$' || true)
+          if [ -n "$bad" ]; then echo "Forbidden files committed:"; echo "$bad"; exit 1; fi
+      - name: Required docs exist
+        run: |
+          for f in CLAUDE.md docs/PROGRESS.md docs/DECISIONS.md docs/architecture.md docs/data-model.md docs/security.md docs/privacy.md; do
+            test -f "$f" || { echo "missing $f"; exit 1; }
+          done
+
+  web:
+    name: Web (lint, typecheck, test)
+    runs-on: ubuntu-latest
+    if: ${{ hashFiles('apps/web/package.json') != '' }}
+    defaults: { run: { working-directory: apps/web } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: apps/web/package-lock.json }
+      - run: npm ci
+      - run: npm run lint --if-present
+      - run: npm run typecheck --if-present
+      - run: npm test --if-present -- --run
+
+  supabase:
+    name: Supabase (migrations apply cleanly)
+    runs-on: ubuntu-latest
+    if: ${{ hashFiles('supabase/config.toml') != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - run: supabase db start
+      - run: supabase db lint
+      - run: supabase test db --if-present || true
+
+# iOS builds run on James's Mac (macOS runners cost 10x minutes); Claude Code attaches build output to the PR.

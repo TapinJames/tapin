@@ -1,0 +1,39 @@
+# secrets and local config
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.mobileprovision
+*.keystore
+*.jks
+supabase/.temp/
+supabase/.branches/
+
+# macOS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# iOS (XcodeGen generates the project)
+apps/ios/*.xcodeproj
+apps/ios/*.xcworkspace
+apps/ios/build/
+apps/ios/DerivedData/
+apps/ios/**/xcuserdata/
+apps/ios/Packages/
+
+# Android
+apps/android/.gradle/
+apps/android/build/
+apps/android/**/build/
+apps/android/local.properties
+
+# Node / Next.js
+node_modules/
+apps/web/.next/
+apps/web/out/
+apps/web/.vercel/
+coverage/
+*.log

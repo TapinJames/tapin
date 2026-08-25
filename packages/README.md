@@ -1,0 +1,1 @@
+Shared contracts (TypeScript types + runtime schemas for the Edge Function inputs/outputs) arrive with T-005. The iOS app mirrors them as Codable structs; a generated OpenAPI spec is a later improvement.
