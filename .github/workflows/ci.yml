@@ -25,7 +25,8 @@ jobs:
       - name: No committed env files, keys or certificates
         run: |
           set -e
-          bad=$(git ls-files | grep -E '(^|/)\.env(\..*)?$|\.p8$|\.p12$|\.mobileprovision$|\.keystore$|\.jks$' || true)
+          # .env.example is allowed (it documents required vars without secrets)
+          bad=$(git ls-files | grep -E '(^|/)\.env(\..*)?$|\.p8$|\.p12$|\.mobileprovision$|\.keystore$|\.jks$' | grep -v '\.example$' || true)
           if [ -n "$bad" ]; then echo "Forbidden files committed:"; echo "$bad"; exit 1; fi
       - name: Required docs exist
         run: |
