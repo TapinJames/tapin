@@ -19,6 +19,8 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 2. T-003 — iOS: VPN layer (DNS-filtering packet tunnel) with the "switched off" signal.
 3. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
 
+**CI note:** Re-enable the `supabase` CI job in T-005 (when `supabase/config.toml` lands) and the `web` CI job in the first web task (when `apps/web/package.json` lands). No path filters needed.
+
 ## Blockers / decisions needed
 
 - None.
