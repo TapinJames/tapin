@@ -73,10 +73,11 @@ struct ContentView: View {
 
                 // Start/End buttons
                 VStack(spacing: 12) {
+                    // DEVELOPMENT ONLY — 60 seconds for testing
                     Button {
                         viewModel.startClassMode()
                     } label: {
-                        Label("Start class mode (15 min)", systemImage: "play.fill")
+                        Label("Start class mode (60 sec)", systemImage: "play.fill")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)

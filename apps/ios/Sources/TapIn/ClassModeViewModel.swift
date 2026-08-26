@@ -18,8 +18,8 @@ final class ClassModeViewModel: ObservableObject {
     /// When class mode will end (if active).
     @Published private(set) var classModeEndTime: Date?
 
-    /// Duration for class mode in minutes.
-    private let classModeMinutes: Int = 15
+    // DEVELOPMENT ONLY — 60 seconds for testing; production uses server-provided duration
+    private let classModeSeconds: Int = 60
 
     // MARK: - Computed Properties
 
@@ -77,16 +77,16 @@ final class ClassModeViewModel: ObservableObject {
         }
     }
 
-    /// Start class mode for 15 minutes.
+    /// Start class mode for the configured duration.
     func startClassMode() {
-        logger.info("Starting class mode for \(self.classModeMinutes) minutes")
+        logger.info("Starting class mode for \(self.classModeSeconds) seconds")
 
         // Apply blocks immediately
         ClassMode.applyDefault()
 
         // Calculate end time
         let now = Date()
-        let endTime = now.addingTimeInterval(TimeInterval(classModeMinutes * 60))
+        let endTime = now.addingTimeInterval(TimeInterval(classModeSeconds))
         classModeEndTime = endTime
 
         // Schedule the DeviceActivity monitor to clear blocks at end time
