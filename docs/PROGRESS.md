@@ -4,21 +4,22 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 
 ## Where we are
 
-- **Phase:** Week 0 — first iOS code, pending physical test.
-- **Current task:** T-002 (iOS Screen Time core loop) — code complete, awaiting James's physical test.
-- **Last session:** Aug 25, 2026 — T-002 code written.
+- **Phase:** Week 0 — first iOS code, pending physical tests.
+- **Current task:** T-003 (iOS VPN layer) — code complete, awaiting James's physical test.
+- **Last session:** Aug 25, 2026 — T-003 code written.
 
 ## Done
 
 - Repo skeleton, standing orders, docs package, task briefs T-001 – T-004 (written by the tech-lead chat, Aug 25, 2026).
 - **T-001:** Repo initialized on GitHub (TapinJames/tapin), tools installed.
 - **T-002 (code):** TapIn app + TapInMonitor extension, XcodeGen project, Screen Time authorization, bundle-ID hiding, DeviceActivityMonitor scheduling. Builds for simulator; device build pending James's signing setup.
+- **T-003 (code):** TapInTunnel packet-tunnel extension, DNS filtering with NXDOMAIN responses, on-demand reconnect, VPN stop detection written to App Group. IPv6 disabled to prevent DNS leaks. Test blocklist: tiktok.com, instagram.com, snapchat.com, youtube.com, google.com, bing.com, duckduckgo.com.
 
 ## Next
 
-1. T-002 — iOS: Screen Time authorization → hide apps by bundle identifier → scheduled unlock, on James's iPhone.
-2. T-003 — iOS: VPN layer (DNS-filtering packet tunnel) with the "switched off" signal.
-3. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
+1. T-002 + T-003 physical tests on James's iPhone.
+2. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
+3. T-005 — Supabase schema.
 
 **CI note:** Re-enable the `supabase` CI job in T-005 (when `supabase/config.toml` lands) and the `web` CI job in the first web task (when `apps/web/package.json` lands). No path filters needed.
 
@@ -28,7 +29,8 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 
 ## Physical tests pending (James)
 
-- **T-002:** Screen Time core loop on James's iPhone — see `docs/tasks/T-002-ios-screen-time-core-loop.md` for step-by-step instructions. Must complete before T-003.
+- **T-002:** Screen Time core loop on James's iPhone — see `docs/tasks/T-002-ios-screen-time-core-loop.md` for step-by-step instructions.
+- **T-003:** VPN DNS filter on James's iPhone — see `docs/tasks/T-003-ios-vpn-layer.md` for step-by-step instructions. Tests: blocked domains fail, allowed domains load, TikTok app fails, Messages/Phone work, VPN stop detection, on-demand reconnect after restart and network changes.
 
 ## Risk register (short)
 

@@ -42,4 +42,72 @@ On James's iPhone with the filter on: Safari to `https://www.tiktok.com` fails (
 8. Send screenshots and notes to the tech-lead chat.
 
 ## Report
-Files; the DNS response choice and why; how TCP/53 and IPv6 are handled (or explicitly not); anything Apple's docs say that differs from `docs/ios.md`; the physical steps as built; open questions.
+
+**Session:** Aug 25, 2026
+
+### Files changed
+
+- `apps/ios/project.yml` — added TapInTunnel target (packet-tunnel-provider), added Network Extensions entitlement to main app
+- `apps/ios/Entitlements/TapIn.entitlements` — added `com.apple.developer.networking.networkextension` array
+- `apps/ios/Entitlements/TapInTunnel.entitlements` — new: Network Extensions + App Group
+- `apps/ios/Sources/TapInTunnel/Info.plist` — new: NSExtension pointing to `PacketTunnelProvider`
+- `apps/ios/Sources/TapInTunnel/PacketTunnelProvider.swift` — new: the DNS-filtering packet tunnel
+- `apps/ios/Sources/Shared/AppGroupContainer.swift` — new: shared container access for VPN stop events and blocklist
+- `apps/ios/Sources/Shared/DNSBlocklist.swift` — new: blocklist read/write from App Group
+- `apps/ios/Sources/TapIn/VPNManager.swift` — new: VPN installation/start/stop, on-demand config, status observation
+- `apps/ios/Sources/TapIn/ContentView.swift` — updated: VPN section with install/start/stop buttons, stop event display
+
+### DNS response choice
+
+**NXDOMAIN** (RCODE 3). As noted in the brief, responding with `0.0.0.0` or `127.0.0.1` causes connection-timeout hangs in Safari and apps because they still attempt to connect. NXDOMAIN produces an immediate "server not found" error — better UX and clearer blocking.
+
+### TCP/53 handling
+
+**Not handled.** The tunnel only routes UDP traffic to `10.7.0.1`. TCP DNS queries (rare — mainly for large responses or zone transfers) will fail through to the system DNS. This is acceptable because:
+1. Almost all mobile DNS traffic is UDP
+2. Apps don't typically retry on TCP when UDP fails
+3. Adding TCP proxying would complicate the extension significantly
+
+If TCP DNS leaks become an issue in testing, we can add TCP handling in a follow-up task.
+
+### IPv6 handling
+
+**Explicitly disabled.** The tunnel settings include:
+```swift
+let ipv6 = NEIPv6Settings(addresses: [], networkPrefixLengths: [])
+ipv6.excludedRoutes = [NEIPv6Route.default()]
+```
+
+This routes all IPv6 traffic outside the tunnel, and since we only configure IPv4 DNS servers (`10.7.0.1`), the system won't try to resolve over IPv6. This prevents DNS leaks on cellular networks that prefer IPv6.
+
+Simpler than trying to also capture and filter IPv6 DNS packets, and equally effective.
+
+### On-demand reconnect
+
+Configured with `NEOnDemandRuleConnect` matching `interfaceTypeMatch = .any`. The tunnel will reconnect automatically after:
+- Network interface changes (Wi-Fi ↔ cellular)
+- Phone restarts
+
+**Important limitation:** Users can still disable the VPN in Settings → VPN. This is by Apple's design on non-supervised devices. However, the `stopTunnel(with reason:)` callback fires immediately with `.userInitiated`, and we write this to the App Group for the bypass alert.
+
+### What remains
+
+- **T-007:** Server-side policy download (replaces hardcoded blocklist)
+- **T-007:** Server POST when VPN stops (currently only writes to App Group)
+- The UI shows the stop event but only checks `onAppear` — a future task should poll or use a notification
+
+### Physical test steps
+
+As documented in the brief — no changes needed. The steps are:
+
+1. Run app → **Install & start filter** → approve VPN prompt. VPN icon appears.
+2. Safari: tiktok.com, instagram.com, google.com fail; classroom.google.com, apple.com load.
+3. Wi-Fi off, repeat on cellular.
+4. TikTok app: no feed. Messages + Phone: work.
+5. Settings → VPN → toggle off → app shows stop marker with "userInitiated".
+6. Restart phone → VPN should auto-reconnect (on-demand).
+7. Airplane mode on/off → VPN should reconnect.
+
+### Open questions
+
+None. The implementation follows the brief exactly with the approved NXDOMAIN and IPv6-disabled approaches.

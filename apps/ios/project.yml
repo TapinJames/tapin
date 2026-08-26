@@ -26,6 +26,8 @@ targets:
       path: Entitlements/TapIn.entitlements
       properties:
         com.apple.developer.family-controls: true
+        com.apple.developer.networking.networkextension:
+          - packet-tunnel-provider
         com.apple.security.application-groups:
           - group.com.tapinschools.tapin
     info:
@@ -45,6 +47,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.tapinschools.tapin
     dependencies:
       - target: TapInMonitor
+      - target: TapInTunnel
 
   TapInMonitor:
     type: app-extension
@@ -70,4 +73,31 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tapinschools.tapin.monitor
+        SKIP_INSTALL: true
+
+  TapInTunnel:
+    type: app-extension
+    platform: iOS
+    product: TapInTunnel
+    sources:
+      - path: Sources/TapInTunnel
+        excludes:
+          - Info.plist
+      - path: Sources/Shared
+    entitlements:
+      path: Entitlements/TapInTunnel.entitlements
+      properties:
+        com.apple.developer.networking.networkextension:
+          - packet-tunnel-provider
+        com.apple.security.application-groups:
+          - group.com.tapinschools.tapin
+    info:
+      path: Sources/TapInTunnel/Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.networkextension.packet-tunnel
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).PacketTunnelProvider
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tapinschools.tapin.tunnel
         SKIP_INSTALL: true
