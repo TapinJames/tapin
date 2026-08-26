@@ -73,6 +73,9 @@ final class VPNManager: ObservableObject {
         self.manager = manager
         isInstalled = true
 
+        // Clear any previous stop event since we're starting fresh
+        clearStopEvent()
+
         // Start the tunnel
         try manager.connection.startVPNTunnel()
         logger.info("VPN tunnel started")
@@ -136,6 +139,11 @@ final class VPNManager: ObservableObject {
             guard let connection = notification.object as? NEVPNConnection else { return }
             self?.status = connection.status
             self?.logger.info("VPN status changed: \(String(describing: connection.status))")
+
+            // Check for stop event when VPN disconnects
+            if connection.status == .disconnected {
+                self?.checkStopEvent()
+            }
         }
     }
 }

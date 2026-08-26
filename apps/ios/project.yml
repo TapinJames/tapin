@@ -10,7 +10,7 @@ settings:
   base:
     SWIFT_VERSION: "5.10"
     CODE_SIGN_STYLE: Automatic
-    DEVELOPMENT_TEAM: ""  # Xcode fills this on first open
+    DEVELOPMENT_TEAM: TVXML94PBW
     ENABLE_USER_SCRIPT_SANDBOXING: "YES"
 
 targets:
@@ -22,6 +22,7 @@ targets:
         excludes:
           - Info.plist
       - path: Sources/Shared
+      - path: Sources/TapIn/Assets.xcassets
     entitlements:
       path: Entitlements/TapIn.entitlements
       properties:

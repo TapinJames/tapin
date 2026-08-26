@@ -104,8 +104,8 @@ struct ContentView: View {
                 Label("DNS Filter (VPN)", systemImage: "network")
             }
 
-            // Stop event alert
-            if let stopEvent = vpnManager.lastStopEvent {
+            // Stop event alert - only show when VPN is not connected
+            if let stopEvent = vpnManager.lastStopEvent, vpnManager.status != .connected {
                 GroupBox {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {

@@ -242,9 +242,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         ipHeader[2] = UInt8(totalLength >> 8)
         ipHeader[3] = UInt8(totalLength & 0xFF)
 
-        // Clear checksum (will be recalculated by the system)
+        // Calculate IP header checksum
         ipHeader[10] = 0
         ipHeader[11] = 0
+        let checksum = calculateIPChecksum(ipHeader)
+        ipHeader[10] = UInt8(checksum >> 8)
+        ipHeader[11] = UInt8(checksum & 0xFF)
 
         responsePacket.append(ipHeader)
 
@@ -275,6 +278,31 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     // MARK: - Helpers
+
+    private func calculateIPChecksum(_ header: Data) -> UInt16 {
+        var sum: UInt32 = 0
+        let count = header.count
+
+        // Sum all 16-bit words
+        var i = 0
+        while i < count - 1 {
+            let word = UInt32(header[i]) << 8 | UInt32(header[i + 1])
+            sum += word
+            i += 2
+        }
+
+        // Add odd byte if present
+        if count % 2 == 1 {
+            sum += UInt32(header[count - 1]) << 8
+        }
+
+        // Fold 32-bit sum to 16 bits
+        while sum >> 16 != 0 {
+            sum = (sum & 0xFFFF) + (sum >> 16)
+        }
+
+        return ~UInt16(sum)
+    }
 
     private func stopReasonString(_ reason: NEProviderStopReason) -> String {
         switch reason {
