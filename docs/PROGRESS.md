@@ -13,11 +13,11 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 - Repo skeleton, standing orders, docs package, task briefs T-001 – T-004 (written by the tech-lead chat, Aug 25, 2026).
 - **T-001:** Repo initialized on GitHub (TapinJames/tapin), tools installed.
 - **T-002 (code):** TapIn app + TapInMonitor extension, XcodeGen project, Screen Time authorization, bundle-ID hiding, DeviceActivityMonitor scheduling. Builds for simulator; device build pending James's signing setup.
-- **T-003 (code):** TapInTunnel packet-tunnel extension, DNS filtering with NXDOMAIN responses, on-demand reconnect, VPN stop detection written to App Group. IPv6 disabled to prevent DNS leaks. Test blocklist: tiktok.com, instagram.com, snapchat.com, youtube.com, google.com, bing.com, duckduckgo.com.
+- **T-003:** TapInTunnel packet-tunnel extension, DNS filtering with NXDOMAIN responses, on-demand reconnect, VPN stop detection. Physical tests passed Aug 25 — blocked domains fail in Safari, on-demand reconnect works after restart and airplane mode, stop detection works. App icon added.
 
 ## Next
 
-1. T-002 + T-003 physical tests on James's iPhone.
+1. T-002 physical test on James's iPhone (Screen Time).
 2. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
 3. T-005 — Supabase schema.
 
@@ -30,7 +30,6 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 ## Physical tests pending (James)
 
 - **T-002:** Screen Time core loop on James's iPhone — see `docs/tasks/T-002-ios-screen-time-core-loop.md` for step-by-step instructions.
-- **T-003:** VPN DNS filter on James's iPhone — see `docs/tasks/T-003-ios-vpn-layer.md` for step-by-step instructions. Tests: blocked domains fail, allowed domains load, TikTok app fails, Messages/Phone work, VPN stop detection, on-demand reconnect after restart and network changes.
 
 ## Risk register (short)
 

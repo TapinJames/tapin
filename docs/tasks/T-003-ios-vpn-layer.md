@@ -111,3 +111,32 @@ As documented in the brief — no changes needed. The steps are:
 ### Open questions
 
 None. The implementation follows the brief exactly with the approved NXDOMAIN and IPv6-disabled approaches.
+
+---
+
+## Physical Test Results (Aug 25, 2026)
+
+**Tester:** James Koonce
+
+| Test | Result |
+|------|--------|
+| Install VPN, status bar icon appears | ✅ Pass |
+| Safari: tiktok.com fails | ✅ Pass |
+| Safari: google.com fails | ✅ Pass |
+| Safari: instagram.com fails | ✅ Pass |
+| Safari: youtube.com fails | ✅ Pass |
+| Safari: apple.com loads | ✅ Pass |
+| Safari: classroom.google.com loads | ✅ Pass |
+| Cellular test (Wi-Fi off) | ✅ Pass |
+| Settings → VPN → toggle off → stop event shown | ✅ Pass (after fix) |
+| On-demand: phone restart → VPN reconnects | ✅ Pass |
+| On-demand: airplane mode toggle → VPN reconnects | ✅ Pass |
+
+**Bugs found and fixed during testing:**
+1. **IP checksum not calculated** — DNS responses were dropped; fixed by adding `calculateIPChecksum()` function
+2. **Stop event shown when VPN connected** — Fixed by only showing when `status != .connected` and clearing on start
+3. **Stop event not checked on return from Settings** — Fixed by checking on VPN status change to disconnected
+
+**Notes:**
+- TikTok app feed still loads (uses DNS-over-HTTPS, bypasses DNS filtering) — expected limitation
+- Chrome nothing loads (also uses DoH) — Safari works correctly
