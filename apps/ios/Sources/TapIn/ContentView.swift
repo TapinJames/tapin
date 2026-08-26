@@ -212,11 +212,11 @@ struct ContentView: View {
                 Label("Class Mode (Apps)", systemImage: "book.closed")
             }
 
-            // DEVELOPMENT ONLY — 60 seconds for testing
+            // DEVELOPMENT ONLY — 15 seconds for testing
             Button {
                 classViewModel.startClassMode()
             } label: {
-                Label("Start class mode (60 sec)", systemImage: "play.fill")
+                Label("Start class mode (15 sec)", systemImage: "play.fill")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)

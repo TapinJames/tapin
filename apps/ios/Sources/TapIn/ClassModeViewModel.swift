@@ -18,8 +18,11 @@ final class ClassModeViewModel: ObservableObject {
     /// When class mode will end (if active).
     @Published private(set) var classModeEndTime: Date?
 
-    // DEVELOPMENT ONLY — 60 seconds for testing; production uses server-provided duration
-    private let classModeSeconds: Int = 60
+    // DEVELOPMENT ONLY — 15 seconds for testing; production uses server-provided duration
+    private let classModeSeconds: Int = 15
+
+    /// Timer to end class mode (fallback when DeviceActivityMonitor doesn't fire)
+    private var endTimer: Timer?
 
     // MARK: - Computed Properties
 
@@ -92,6 +95,14 @@ final class ClassModeViewModel: ObservableObject {
         // Schedule the DeviceActivity monitor to clear blocks at end time
         scheduleMonitor(from: now, to: endTime)
 
+        // DEVELOPMENT ONLY — Timer fallback since DeviceActivityMonitor may not fire for short intervals
+        endTimer?.invalidate()
+        endTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(classModeSeconds), repeats: false) { [weak self] _ in
+            Task { @MainActor in
+                self?.endClassMode()
+            }
+        }
+
         isClassModeActive = true
         logger.info("Class mode started, will end at \(endTime)")
     }
@@ -99,6 +110,10 @@ final class ClassModeViewModel: ObservableObject {
     /// End class mode immediately.
     func endClassMode() {
         logger.info("Ending class mode now")
+
+        // Cancel timer if running
+        endTimer?.invalidate()
+        endTimer = nil
 
         // Stop the scheduled monitor
         let center = DeviceActivityCenter()
