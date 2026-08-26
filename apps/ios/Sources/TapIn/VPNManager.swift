@@ -81,10 +81,24 @@ final class VPNManager: ObservableObject {
         logger.info("VPN tunnel started")
     }
 
-    /// Stop the tunnel.
-    func stop() {
-        logger.info("Stopping VPN tunnel...")
-        manager?.connection.stopVPNTunnel()
+    /// Stop the tunnel and disable on-demand (for end of class mode).
+    func stopAndDisable() async {
+        logger.info("Stopping VPN tunnel and disabling on-demand...")
+
+        guard let manager = manager else { return }
+
+        // Disable on-demand so it doesn't reconnect
+        manager.isOnDemandEnabled = false
+        manager.onDemandRules = []
+
+        do {
+            try await manager.saveToPreferences()
+            manager.connection.stopVPNTunnel()
+            logger.info("VPN stopped and on-demand disabled")
+        } catch {
+            logger.error("Failed to disable on-demand: \(error.localizedDescription)")
+            manager.connection.stopVPNTunnel()
+        }
     }
 
     /// Reload the blocklist in the running tunnel.

@@ -4,10 +4,14 @@ import DeviceActivity
 import os
 
 /// ViewModel for the class mode test screen.
+/// Manages both Screen Time (app hiding) and VPN (DNS filtering) as one unified class mode.
 @MainActor
 final class ClassModeViewModel: ObservableObject {
 
     private let logger = Logger(subsystem: "com.tapinschools.tapin", category: "ClassMode")
+
+    /// VPN manager for DNS filtering layer
+    private let vpnManager: VPNManager
 
     /// Current authorization status.
     @Published private(set) var authStatus: AuthorizationStatus = .notDetermined
@@ -18,11 +22,18 @@ final class ClassModeViewModel: ObservableObject {
     /// When class mode will end (if active).
     @Published private(set) var classModeEndTime: Date?
 
+    /// Whether VPN is currently starting (for UI feedback)
+    @Published private(set) var isStartingVPN: Bool = false
+
     // DEVELOPMENT ONLY — 15 seconds for testing; production uses server-provided duration
     private let classModeSeconds: Int = 15
 
     /// Timer to end class mode (fallback when DeviceActivityMonitor doesn't fire)
     private var endTimer: Timer?
+
+    init(vpnManager: VPNManager) {
+        self.vpnManager = vpnManager
+    }
 
     // MARK: - Computed Properties
 
@@ -81,10 +92,24 @@ final class ClassModeViewModel: ObservableObject {
     }
 
     /// Start class mode for the configured duration.
-    func startClassMode() {
+    /// Enables both Screen Time (app hiding) and VPN (DNS filtering).
+    func startClassMode() async {
         logger.info("Starting class mode for \(self.classModeSeconds) seconds")
 
-        // Apply blocks immediately
+        isStartingVPN = true
+
+        // Start VPN with on-demand (DNS filtering layer)
+        do {
+            try await vpnManager.installAndStart()
+            logger.info("VPN started for class mode")
+        } catch {
+            logger.error("Failed to start VPN: \(error.localizedDescription)")
+            // Continue with Screen Time even if VPN fails
+        }
+
+        isStartingVPN = false
+
+        // Apply Screen Time blocks (app hiding layer)
         ClassMode.applyDefault()
 
         // Calculate end time
@@ -99,7 +124,7 @@ final class ClassModeViewModel: ObservableObject {
         endTimer?.invalidate()
         endTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(classModeSeconds), repeats: false) { [weak self] _ in
             Task { @MainActor in
-                self?.endClassMode()
+                await self?.endClassMode()
             }
         }
 
@@ -108,7 +133,8 @@ final class ClassModeViewModel: ObservableObject {
     }
 
     /// End class mode immediately.
-    func endClassMode() {
+    /// Disables both Screen Time and VPN.
+    func endClassMode() async {
         logger.info("Ending class mode now")
 
         // Cancel timer if running
@@ -119,8 +145,11 @@ final class ClassModeViewModel: ObservableObject {
         let center = DeviceActivityCenter()
         center.stopMonitoring([ClassMode.activityName])
 
-        // Clear blocks
+        // Clear Screen Time blocks
         ClassMode.clear()
+
+        // Stop VPN and disable on-demand so it doesn't reconnect
+        await vpnManager.stopAndDisable()
 
         isClassModeActive = false
         classModeEndTime = nil
