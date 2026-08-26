@@ -62,6 +62,20 @@ Dev + mock school: NTAG215 stickers written with a URL like `https://t.tapinscho
 
 **Teacher unlock:** dashboard → `unlock(section_id)` → `lock_sessions` marked `unlocked_by_teacher` → silent push to enrolled devices → app clears the block and pauses the VPN filter until the next tap or bell.
 
+## Compliance signals
+
+The VPN is the **live compliance sensor**; Screen Time is enforcement only. iOS provides no live callback when Family Controls authorization is revoked (confirmed Apple limitation).
+
+| Signal | Detection | Latency | Alert |
+|--------|-----------|---------|-------|
+| VPN turned off | `stopTunnel` callback | Seconds | `vpn_off` |
+| Screen Time revoked | Poll `authorizationStatus` at tap / app-foreground | Next tap or app open | `screentime_revoked` |
+| Blocked app opened | DeviceActivity usage-threshold event | ~1 minute (best-effort) | `blocked_app_used` |
+
+On-demand VPN (`isOnDemandEnabled = true`) re-establishes after network changes and reboots. A deliberate user "off" (Settings → VPN) is allowed by iOS but detected immediately.
+
+**Tamper-proof enforcement** (no workarounds) requires school-owned supervised (MDM) devices — a Phase 2 tier. On personal BYOD, Tap in provides strong deterrence plus visibility: both layers must be bypassed, and any bypass appears on the teacher dashboard within seconds (VPN) or minutes (Screen Time).
+
 ## What is deliberately not here (yet)
 Clever OAuth/SSO, SIS write-back, Android Screen-Time-equivalent, guardian access, ID cards for no-phone students (teacher marks by hand), analytics beyond counts, AI features.
 

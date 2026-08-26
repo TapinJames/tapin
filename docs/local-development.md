@@ -33,7 +33,22 @@ cd apps/ios
 xcodegen generate          # writes TapIn.xcodeproj from project.yml
 open TapIn.xcodeproj       # select the TapIn scheme + James's iPhone → Run
 ```
-Or from the terminal: `xcodebuild -scheme TapIn -destination 'platform=iOS,name=<James's iPhone>' build` then `xcrun devicectl device install app --device <id> <path>.app` (Claude Code fills the exact commands after T-002).
+
+**First time setup:** Open the project in Xcode, go to TapIn target → Signing & Capabilities. If prompted, click "Try Again" to register the App ID and capabilities with Apple. You may need to enable Family Controls capability manually the first time.
+
+**Terminal build (T-002+):**
+```bash
+# Build for device (requires signing set up in Xcode first)
+cd apps/ios
+xcodebuild -scheme TapIn -destination 'platform=iOS,name=iPhone (3)' -configuration Debug build
+
+# Install to device (get device ID from: xcrun devicectl list devices)
+xcrun devicectl device install app \
+  --device 355F9006-83E7-50C4-B3C4-397121D6CD29 \
+  ~/Library/Developer/Xcode/DerivedData/TapIn-*/Build/Products/Debug-iphoneos/TapIn.app
+```
+
+**Note:** Family Controls, DeviceActivity, and NFC do not work in the simulator — always test on a real device.
 
 ## Supabase (from T-005)
 ```

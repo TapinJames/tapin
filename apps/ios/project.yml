@@ -1,0 +1,73 @@
+name: TapIn
+options:
+  bundleIdPrefix: com.tapinschools
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""  # Xcode fills this on first open
+    ENABLE_USER_SCRIPT_SANDBOXING: "YES"
+
+targets:
+  TapIn:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/TapIn
+        excludes:
+          - Info.plist
+      - path: Sources/Shared
+    entitlements:
+      path: Entitlements/TapIn.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups:
+          - group.com.tapinschools.tapin
+    info:
+      path: Sources/TapIn/Info.plist
+      properties:
+        CFBundleDisplayName: Tap in
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIRequiredDeviceCapabilities:
+          - arm64
+        LSRequiresIPhoneOS: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tapinschools.tapin
+    dependencies:
+      - target: TapInMonitor
+
+  TapInMonitor:
+    type: app-extension
+    platform: iOS
+    product: TapInMonitor
+    sources:
+      - path: Sources/TapInMonitor
+        excludes:
+          - Info.plist
+      - path: Sources/Shared
+    entitlements:
+      path: Entitlements/TapInMonitor.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups:
+          - group.com.tapinschools.tapin
+    info:
+      path: Sources/TapInMonitor/Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.deviceactivity.monitor
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).TapInMonitor
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tapinschools.tapin.monitor
+        SKIP_INSTALL: true

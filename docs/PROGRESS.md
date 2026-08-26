@@ -4,14 +4,15 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 
 ## Where we are
 
-- **Phase:** Week 0 — repo initialized, no product code yet.
-- **Current task:** T-001 complete. Next: T-002 (iOS Screen Time core loop).
-- **Last session:** Aug 25, 2026 — T-001 completed.
+- **Phase:** Week 0 — first iOS code, pending physical test.
+- **Current task:** T-002 (iOS Screen Time core loop) — code complete, awaiting James's physical test.
+- **Last session:** Aug 25, 2026 — T-002 code written.
 
 ## Done
 
 - Repo skeleton, standing orders, docs package, task briefs T-001 – T-004 (written by the tech-lead chat, Aug 25, 2026).
-- **T-001:** Repo initialized on GitHub (TapinJames/tapin), tools installed (xcodegen 2.46.0, gitleaks 8.30.1, supabase 2.72.7), CI green.
+- **T-001:** Repo initialized on GitHub (TapinJames/tapin), tools installed.
+- **T-002 (code):** TapIn app + TapInMonitor extension, XcodeGen project, Screen Time authorization, bundle-ID hiding, DeviceActivityMonitor scheduling. Builds for simulator; device build pending James's signing setup.
 
 ## Next
 
@@ -27,7 +28,7 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 
 ## Physical tests pending (James)
 
-- None yet.
+- **T-002:** Screen Time core loop on James's iPhone — see `docs/tasks/T-002-ios-screen-time-core-loop.md` for step-by-step instructions. Must complete before T-003.
 
 ## Risk register (short)
 
