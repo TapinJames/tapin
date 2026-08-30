@@ -33,4 +33,93 @@ On James's iPhone: tap Allow → Face ID → status "approved"; tap Start → In
 8. Send the screenshots and what you saw to the tech-lead chat. Record a 30-second video of steps 4–5 for the plan.
 
 ## Report
-Files created; the exact `xcodebuild`/install commands; the minimum-interval fact from Apple's docs; whether Xcode needed manual capability clicks; the physical steps above (adjusted to what you built); anything that didn't behave; questions for the tech lead — especially anything about `blockedApplications` behaving differently from `docs/ios.md`.
+
+**Date:** Aug 25, 2026
+
+### Files created
+```
+apps/ios/
+├── .gitignore                           # Ignores *.xcodeproj (generated)
+├── project.yml                          # XcodeGen config
+├── Entitlements/
+│   ├── TapIn.entitlements              # Family Controls + App Groups
+│   └── TapInMonitor.entitlements       # Family Controls + App Groups
+└── Sources/
+    ├── Shared/
+    │   ├── BlockedApps.swift           # Dev-only bundle ID list
+    │   └── ClassMode.swift             # ManagedSettingsStore wrapper
+    ├── TapIn/
+    │   ├── Info.plist
+    │   ├── TapInApp.swift              # @main entry
+    │   ├── ContentView.swift           # Test UI
+    │   └── ClassModeViewModel.swift    # Auth + scheduling logic
+    └── TapInMonitor/
+        ├── Info.plist                  # NSExtensionPrincipalClass
+        └── TapInMonitor.swift          # DeviceActivityMonitor subclass
+```
+
+### Build commands
+```bash
+# Generate Xcode project
+cd apps/ios && xcodegen generate
+
+# Build for device (after signing is set up)
+xcodebuild -scheme TapIn -destination 'platform=iOS,name=iPhone (3)' -configuration Debug build
+
+# Install to device
+xcrun devicectl device install app \
+  --device 355F9006-83E7-50C4-B3C4-397121D6CD29 \
+  ~/Library/Developer/Xcode/DerivedData/TapIn-*/Build/Products/Debug-iphoneos/TapIn.app
+```
+
+### Minimum interval (from Apple docs)
+**15 minutes minimum, 1 week maximum.** DeviceActivitySchedule requires at least 15 minutes between `intervalStart` and `intervalEnd`. This is a hard constraint in the Screen Time framework. Source: [DeviceActivitySchedule documentation](https://developer.apple.com/documentation/deviceactivity/deviceactivityschedule) and developer forum discussions.
+
+### Signing setup
+`DEVELOPMENT_TEAM` is left empty in project.yml — Xcode fills it on first open when James selects his team. James will need to:
+1. Open `TapIn.xcodeproj` in Xcode
+2. Go to TapIn target → Signing & Capabilities
+3. Select his development team
+4. If Family Controls shows an error, click "Try again" to register the capability
+
+### Stretch goal (FamilyActivityPicker fallback)
+**Not implemented yet** — pending physical test of steps 1-5. If bundle-ID hiding works, I'll add the fallback screen in a follow-up commit.
+
+### Physical test steps (James)
+
+**Before you start:**
+- Install Instagram, TikTok, Snapchat, and YouTube on your iPhone if not already installed
+
+**Setup:**
+1. Open Terminal, run: `cd ~/code/tapin/apps/ios && xcodegen generate`
+2. Run: `open TapIn.xcodeproj`
+3. In Xcode: select the TapIn target → Signing & Capabilities → select your team
+4. If you see "Family Controls" with an error, click "Try again"
+5. Connect your iPhone, select it as the run destination
+6. Press Run (⌘R)
+
+**Test:**
+1. App launches → tap **Allow Screen Time** → approve with Face ID
+2. Verify status shows "Approved" (screenshot)
+3. Tap **Start class mode (15 min)**
+4. Press Home → Instagram, TikTok, Snapchat, YouTube should be gone
+5. Search (swipe down) — they shouldn't appear (screenshot)
+6. **Close the app completely** (swipe up from app switcher)
+7. Wait 15 minutes
+8. Check Home Screen — apps should return automatically (screenshot, note position)
+9. Re-open Tap in → tap **Start class mode** again
+10. Tap **End class mode now** → apps return immediately
+11. Go to Settings → Screen Time → scroll to "Tap in" → turn access off
+12. Re-open Tap in → status should show "Denied" or "Not requested"
+
+**Send to tech-lead chat:**
+- Screenshots from steps 2, 5, 8
+- 30-second video showing apps disappearing and returning
+- Any unexpected behavior
+
+### Questions for tech lead
+None at this time. Code matches `docs/ios.md` patterns exactly.
+
+### Risks noted
+- **App position after unblock:** Apple docs warn that hidden apps may return to a different Home Screen position. James should note where they land.
+- **Signing:** First-time setup requires manual capability registration in Xcode. Documented in physical test steps.

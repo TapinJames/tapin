@@ -4,20 +4,21 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 
 ## Where we are
 
-- **Phase:** Week 0 — repo initialized, no product code yet.
-- **Current task:** T-001 complete. Next: T-002 (iOS Screen Time core loop).
-- **Last session:** Aug 25, 2026 — T-001 completed.
+- **Phase:** Week 0 — first iOS code, pending physical tests.
+- **Current task:** T-003 (iOS VPN layer) — code complete, awaiting James's physical test.
+- **Last session:** Aug 25, 2026 — T-003 code written.
 
 ## Done
 
 - Repo skeleton, standing orders, docs package, task briefs T-001 – T-004 (written by the tech-lead chat, Aug 25, 2026).
-- **T-001:** Repo initialized on GitHub (TapinJames/tapin), tools installed (xcodegen 2.46.0, gitleaks 8.30.1, supabase 2.72.7), CI green.
+- **T-001:** Repo initialized on GitHub (TapinJames/tapin), tools installed.
+- **T-002:** TapIn app + TapInMonitor extension, Screen Time authorization, bundle-ID hiding. Physical tests passed Aug 25 — apps hidden during class mode, auto-restored after timer. Timer fallback added for short test intervals.
+- **T-003:** TapInTunnel packet-tunnel extension, DNS filtering with NXDOMAIN responses, on-demand reconnect, VPN stop detection. Physical tests passed Aug 25 — blocked domains fail in Safari, on-demand reconnect works after restart and airplane mode, stop detection works. App icon added.
 
 ## Next
 
-1. T-002 — iOS: Screen Time authorization → hide apps by bundle identifier → scheduled unlock, on James's iPhone.
-2. T-003 — iOS: VPN layer (DNS-filtering packet tunnel) with the "switched off" signal.
-3. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
+1. T-004 — procedure: Family Sharing test on two or three teenagers' phones (Risk 1).
+2. T-005 — Supabase schema.
 
 **CI note:** Re-enable the `supabase` CI job in T-005 (when `supabase/config.toml` lands) and the `web` CI job in the first web task (when `apps/web/package.json` lands). No path filters needed.
 
@@ -27,7 +28,7 @@ Updated by Claude Code at the end of every session. Read by the tech-lead chat a
 
 ## Physical tests pending (James)
 
-- None yet.
+- None currently.
 
 ## Risk register (short)
 

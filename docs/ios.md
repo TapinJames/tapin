@@ -50,6 +50,22 @@ Install flow: `NETunnelProviderManager` → `loadAllFromPreferences` → configu
 
 **Limits (say them out loud in the product):** DNS filtering does not stop apps that hard-code IP addresses or use their own encrypted DNS (Chrome/Firefox with DoH); the Screen Time layer covers the app case. Only one VPN can be active — a student starting another VPN disconnects ours (→ `vpn_off` alert). The VPN icon appears in the status bar. Nothing about DNS queries is logged or sent — filtering is on-device.
 
+## Compliance signals
+
+iOS provides **no live callback** when the user disables Family Controls authorization. `AuthorizationCenter.shared.authorizationStatus` updates only when queried (and even then, only reliably when not under a debugger). This is a confirmed Apple limitation.
+
+**Consequence:** Screen Time is enforcement only; the VPN is the live compliance sensor.
+
+| Signal | Detection method | Latency |
+|--------|-----------------|---------|
+| VPN turned off | `stopTunnel(with:completionHandler:)` with reason `.userInitiated` | Seconds (iOS calls the extension immediately) |
+| Screen Time revoked | Poll `authorizationStatus` at each tap and app-foreground | Next tap or next time the app opens |
+| Blocked app opened | DeviceActivity usage-threshold event (best-effort) | ~1 minute |
+
+**On-demand reconnect:** `isOnDemandEnabled = true` with `NEOnDemandRuleConnect` re-establishes the VPN after network changes and reboots. A deliberate user "off" (Settings → VPN toggle) is still allowed by iOS design but is detected via `stopTunnel`.
+
+**Tamper-proof enforcement:** exact tamper-proof blocking (no student workarounds) requires school-owned **supervised (MDM) devices** — a Phase 2 tier. On personal BYOD devices, Tap in provides strong deterrence plus visibility: both layers must be bypassed, and any bypass is visible on the teacher dashboard within seconds (VPN) or minutes (Screen Time).
+
 ## NFC — background tag reading
 
 Tags carry an NDEF URL record `https://t.tapinschools.com/t/<tag_uid>` (pilot tags append the NTAG 424 DNA SDM parameters: `?picc=<enc>&cmac=<mac>`). iPhone XS+ reads NDEF tags in the background (screen on, not in Control Center/Wallet); iOS opens the app through the **universal link** (Associated Domains + an `apple-app-site-association` file served from `t.tapinschools.com`). Handle `onOpenURL` / `NSUserActivity` → call `tap`. Foreground fallback: a "Tap now" button that starts an `NFCNDEFReaderSession` for phones where background reading is off.
